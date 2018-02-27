@@ -31,7 +31,7 @@ describe('Game Routes', function () {
 
   describe('GET: api/game', function() {
     it('should return a game', function(done) {
-      request.get(`localhost:3000/api/game?id=${game.id}`)
+      request.get(`localhost:3000/api/game/${game.id}`)
         .end((err, res) => {
           if (err) return done(err);
           game = JSON.parse(res.text);
@@ -43,21 +43,14 @@ describe('Game Routes', function () {
         });
     });
     it('should return route not found', function(done) {
-      request.get(`localhost:3000/api/game?id=doesntexist`)
+      request.get(`localhost:3000/api/game/:doesntexist`)
         .end((err, res) => {
           expect(err).toBeTruthy();
           expect(res.status).toEqual(404);
           done();
         });
     });
-    // it('should return bad request', function(done) {
-    //   request.get(`localhost:3000/api/game?foo=alex`)
-    //     .end((err, res) => {
-    //       expect(err).toBeTruthy();
-    //       expect(res.status).toEqual(400);
-    //       done();
-    //     });
-    // });
+
   });
 
   
