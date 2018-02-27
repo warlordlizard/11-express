@@ -1,16 +1,72 @@
 'use strict';
 
-const http = require('http');
+const express = require('express'); 
+const morgan = require('morgan');
+const createError = require('http-errors');
+const jsonParser = require('body-parser').json();
+const debug = require('debug')('note:server');
 const Game = require('./model/game.js');
-const Router = require('./lib/router.js');
-const gameRouter = require('./route/game-route.js');
 const storage = require('./lib/storage.js');
 const PORT = process.env.PORT || 3000;
-const router = new Router();
 
-gameRouter(router);
-const server = http.createServer(router.route());
+const app = express();
+app.use(morgan('dev'));
 
-server.listen(PORT, () => {
-  console.log(`serve up: ${PORT}`);
+app.post('/api/game', jsonParser, function (req, res, next) {
+  debug('POST: /api/game');
+
+  Game.createGame(req.body)
+    .then ( game => res.json(game))
+    .catch (err => {
+      res.status(400).send('bad request');
+      next(err);
+    });
+});
+
+app.get('/api/game/:gameId', function (req, res, next) {
+  debug('GET: /api/game/:gameId');
+
+  Game.fetchGame(req.params.gameId)
+    .then( game => res.json(game))
+    .catch( err => {
+      res.status(404).send('route not found');
+      next(err);
+    });
+});
+  
+app.get('/api/game', function (req, res) {
+  storage.listItems('game')
+    .then((game) => {
+      res.writeHead(300, {
+        'Content-Type': 'application/json',
+      });
+      res.write('List of Games');
+
+      res.write(JSON.stringify(game) + '\n');
+      res.end();
+    });
+});
+
+app.delete('/api/game/:gameId', function (req, res, next) {
+  storage.deleteItem('game', req.params.gameId)
+    .then(() => res.status(204))
+    .catch(err => {
+      res.status(404).send('route not found');
+      next(err);
+    });
+  
+});
+app.use(function (err, req, res, next) {
+  debug('error middleware');
+  console.error(err.message);
+  if (err.status) {
+    res.status(err.status).send(err.name);
+    return;
+  }
+  err = createError(500, err.message);
+  res.status(err.status).send(err.name);
+});
+
+app.listen( PORT, () => {
+  debug(`serve up: ${PORT}`);
 });
