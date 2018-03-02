@@ -1,7 +1,7 @@
 'use strict';
 
 const uuidv4 = require('uuid/v4');
-const createError = require('http-errors');
+// const createError = require('http-errors');
 const debug = require('debug')('game:game');
 const storage = require('../lib/storage.js');
 
