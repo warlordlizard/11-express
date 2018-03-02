@@ -48,7 +48,7 @@ app.delete('/api/game/:gameId', function (req, res, next) {
     });
   
 });
-app.use(function (err, req, res, next) {
+app.use(function (err, req, res) {
   debug('error middleware');
   console.error(err.message);
   if (err.status) {
