@@ -43,10 +43,18 @@ describe('Game Routes', function () {
         });
     });
     it('should return route not found', function(done) {
-      request.get(`localhost:3000/api/game/:doesntexist`)
+      request.get(`localhost:3000/api/game/1234`)
         .end((err, res) => {
           expect(err).toBeTruthy();
           expect(res.status).toEqual(404);
+          done();
+        });
+    });
+    it('should return bad request', function (done) {
+      request.get(`localhost:3000/api/game`)
+        .end((err, res) => {
+          expect(err).toBeTruthy();
+          expect(res.status).toEqual(400);
           done();
         });
     });

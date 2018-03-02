@@ -35,16 +35,8 @@ app.get('/api/game/:gameId', function (req, res, next) {
 });
   
 app.get('/api/game', function (req, res) {
-  storage.listItems('game')
-    .then((game) => {
-      res.writeHead(300, {
-        'Content-Type': 'application/json',
-      });
-      res.write('List of Games');
-
-      res.write(JSON.stringify(game) + '\n');
-      res.end();
-    });
+  res.status(400);
+  res.end();
 });
 
 app.delete('/api/game/:gameId', function (req, res, next) {
